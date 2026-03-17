@@ -1,0 +1,73 @@
+-- Create and use the database
+-- CREATE DATABASE IF NOT EXISTS SocialApp_DB;
+-- USE SocialApp_DB;
+
+-- 1. Users table
+-- CREATE TABLE IF NOT EXISTS users (
+--     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+--     full_name VARCHAR(100),
+--     username VARCHAR(50) UNIQUE NOT NULL,
+--     email VARCHAR(100) UNIQUE NOT NULL,
+--     password VARCHAR(255) NOT NULL,
+--     bio VARCHAR(500),
+--     profile_image VARCHAR(500),
+--     is_active BOOLEAN DEFAULT TRUE,
+--     message_count INT DEFAULT 0,
+--     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+--     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+-- );
+
+-- 2. Posts table
+-- CREATE TABLE IF NOT EXISTS posts (
+--     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+--     user_id BIGINT NOT NULL,
+--     caption TEXT,
+--     image_url VARCHAR(500),
+--     like_count INT DEFAULT 0,
+--     comment_count INT DEFAULT 0,
+--     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+--     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+-- );
+
+-- 3. Comments table
+-- CREATE TABLE IF NOT EXISTS comments (
+--     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+--     user_id BIGINT NOT NULL,
+--     post_id BIGINT NOT NULL,
+--     text TEXT NOT NULL,
+--     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+--     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+--     FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+-- );
+
+-- 4. Likes table
+-- CREATE TABLE IF NOT EXISTS likes (
+--     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+--     user_id BIGINT NOT NULL,
+--     post_id BIGINT NOT NULL,
+--     UNIQUE KEY unique_like (user_id, post_id),       -- prevents duplicate likes
+--     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+--     FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+-- );
+
+-- 5. Follows table
+-- CREATE TABLE IF NOT EXISTS follows (
+--     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+--     follower_id BIGINT NOT NULL,
+--     following_id BIGINT NOT NULL,
+--     UNIQUE KEY unique_follow (follower_id, following_id),  -- prevents duplicate follows
+--     FOREIGN KEY (follower_id) REFERENCES users(id) ON DELETE CASCADE,
+--     FOREIGN KEY (following_id) REFERENCES users(id) ON DELETE CASCADE
+-- );
+
+-- 6. Messages table
+-- CREATE TABLE IF NOT EXISTS messages (
+--     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+--     sender_id BIGINT NOT NULL,
+--     receiver_id BIGINT NOT NULL,
+--     content VARCHAR(2000) NOT NULL,
+--     is_seen BOOLEAN DEFAULT FALSE,
+--     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+--     FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
+--     FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
+-- );

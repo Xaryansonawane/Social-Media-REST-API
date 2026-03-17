@@ -1,0 +1,22 @@
+-- 1. INSERT 20 USERS
+INSERT INTO users (full_name, username, email, password, bio, profile_image, is_active, message_count, created_at, updated_at) VALUES
+('Arjun Deshmukh', 'arjun_desh', 'arjun@gmail.com', 'pass123', 'Pune based developer', NULL, TRUE, 0, NOW(), NOW()),
+('Priya Kulkarni', 'priya_kulk', 'priya@gmail.com', 'pass123', 'loves photography', NULL, TRUE, 0, NOW(), NOW()),
+('Rohit Patil', 'rohit_patil', 'rohit@gmail.com', 'pass123', 'cricket fan', NULL, TRUE, 0, NOW(), NOW()),
+('Sneha Jadhav', 'sneha_jadh', 'sneha@gmail.com', 'pass123', 'foodie from Nashik', NULL, TRUE, 0, NOW(), NOW()),
+('Vikram Shinde', 'vikram_shin', 'vikram@gmail.com', 'pass123', 'biker and traveler', NULL, TRUE, 0, NOW(), NOW()),
+('PoojaMore', 'pooja_more', 'pooja@gmail.com', 'pass123', 'teacher by passion', NULL, TRUE, 0, NOW(), NOW()),
+('Amol Pawar', 'amol_pawar', 'amol@gmail.com', 'pass123', 'startup founder', NULL, TRUE, 0, NOW(), NOW()),
+('Rutuja Gaikwad', 'rutuja_gaik', 'rutuja@gmail.com', 'pass123', 'artist from Kolhapur', NULL, TRUE, 0, NOW(), NOW()),
+('Saurabh Bhosale', 'saurabh_bho', 'saurabh@gmail.com', 'pass123', 'musician', NULL, TRUE, 0, NOW(), NOW()),
+('Ankita Salve', 'ankita_salv', 'ankita@gmail.com', 'pass123', 'fitness enthusiast', NULL, TRUE, 0, NOW(), NOW()),
+('Nikhil Mane', 'nikhil_mane', 'nikhil@gmail.com', 'pass123', 'gamer and coder', NULL, TRUE, 0, NOW(), NOW()),
+('Dipali Waghmare', 'dipali_wagh', 'dipali@gmail.com', 'pass123', 'fashion blogger', NULL, TRUE, 0, NOW(), NOW()),
+('Ganesh Kamble', 'ganesh_kamb', 'ganesh@gmail.com', 'pass123', 'farmer from Solapur', NULL, TRUE, 0, NOW(), NOW()),
+('Kavita Thorat', 'kavita_thor', 'kavita@gmail.com', 'pass123', 'book lover', NULL, TRUE, 0, NOW(), NOW()),
+('Rahul Kale', 'rahul_kale', 'rahul@gmail.com', 'pass123', 'chef and food vlogger', NULL, TRUE, 0, NOW(), NOW()),
+('Shruti Parab', 'shruti_para', 'shruti@gmail.com', 'pass123', 'dancer from Mumbai', NULL, TRUE, 0, NOW(), NOW()),
+('Tushar Nimbalkar', 'tushar_nimb', 'tushar@gmail.com', 'pass123', 'civil engineer', NULL, TRUE, 0, NOW(), NOW()),
+('Manasi Deshpande', 'manasi_desh', 'manasi@gmail.com', 'pass123', 'yoga instructor', NULL, TRUE, 0, NOW(), NOW()),
+('Pravin Lokhande', 'pravin_lokh', 'pravin@gmail.com', 'pass123', 'journalist Aurangabad', NULL, TRUE, 0, NOW(), NOW()),
+('Ashwini Gavhane', 'ashwini_gav', 'ashwini@gmail.com', 'pass123', 'doctor from Nagpur', NULL, TRUE, 0, NOW(), NOW());

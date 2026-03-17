@@ -242,6 +242,7 @@ POST http://localhost:8080/user/login
 **Aryan Sonawane**
 - GitHub: [@Xaryansonawane](https://github.com/Xaryansonawane)
 - LeetCode: [Xaryansonawane](https://leetcode.com/u/Xaryansonawane/)
+- HackerRank:[Xaryansonawane](https://www.hackerrank.com/profile/Xaryansonawane)
 - Instagram: [@Xaryansonawane](https://instagram.com/Xaryansonawane)
 
 ---

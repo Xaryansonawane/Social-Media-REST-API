@@ -1,90 +1,197 @@
-# 🔐 Security Policy
-
-## 📦 Supported Versions
-
-The following versions of Social Media REST API are currently supported with security updates:
-
-| Version | Supported |
-|---------|-----------|
-| 1.0.x | ✅ |
+# 🔒 Security Policy
 
 ---
 
-## 🛡️ Security Features
+## 📱 Social Media REST API – Security
 
-This project includes the following security measures:
+A fully functional, production-structured **RESTful backend** for a social media platform built with **Spring Boot 3.4.3, Spring Security, JWT Authentication, Spring Data JPA, and MySQL**.
 
-- ✅ **BCrypt Password Hashing** — all passwords are hashed using BCrypt before storing in database
-- ✅ **@JsonProperty WRITE_ONLY** — passwords are never returned in any API response
-- ✅ **Spring Security** — all endpoints protected except `/user/**`
-- ✅ **CSRF Disabled** — for REST API stateless communication
-- ✅ **ResponseStatusException** — proper HTTP status codes for all errors
-- ✅ **Input Validation** — empty email, password and username are rejected with 400 BAD REQUEST
-- ✅ **Duplicate Like Prevention** — users cannot like the same post twice
-- ✅ **Self Follow Prevention** — users cannot follow themselves
-- ✅ **Self Message Prevention** — users cannot send messages to themselves
+This document explains how security is handled in this project and how vulnerabilities should be reported responsibly.
+
+---
+
+![Java](https://img.shields.io/badge/Java-21-orange?style=flat-square\&logo=java)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.3-brightgreen?style=flat-square\&logo=springboot)
+![Spring Security](https://img.shields.io/badge/Spring%20Security-6.4.3-blue?style=flat-square\&logo=springsecurity)
+![JWT](https://img.shields.io/badge/JWT-Authentication-purple?style=flat-square\&logo=jsonwebtokens)
+![MySQL](https://img.shields.io/badge/MySQL-8.0-blue?style=flat-square\&logo=mysql)
+![Maven](https://img.shields.io/badge/Maven-3.x-red?style=flat-square\&logo=apachemaven)
+![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
+
+---
+
+## 📌 Overview
+
+Security is a core part of this project. This API follows industry-standard practices such as:
+
+* JWT-based authentication
+* BCrypt password hashing
+* Input validation
+* Secure API design
+* DTO-based data protection
+
+---
+
+## ✅ Supported Versions
+
+| Version              | Supported |
+| -------------------- | --------- |
+| Latest (main branch) | ✅ Yes     |
+| Older versions       | ❌ No      |
+
+> Always use the latest version to stay secure.
 
 ---
 
 ## 🚨 Reporting a Vulnerability
 
-If you discover a security vulnerability in this project please follow these steps:
+If you discover a security issue, **do NOT open a public issue**.
 
-**DO NOT** create a public GitHub issue for security vulnerabilities.
+📧 Email: **[aryanvipinsonawane@gmail.com](mailto:aryanvipinsonawane@gmail.com)**
+📌 Subject: `Security Vulnerability Report - SocialApp`
 
-### Steps to Report
+### Include:
 
-**1. Contact directly via:**
-- GitHub: [@Xaryansonawane](https://github.com/Xaryansonawane)
-- Instagram: [@Xaryansonawane](https://instagram.com/Xaryansonawane)
+* Vulnerability description
+* Steps to reproduce
+* Impact
+* Suggested fix (optional)
 
-**2. Include the following in your report:**
-- Description of the vulnerability
-- Steps to reproduce
-- Potential impact
-- Suggested fix if you have one
-
-**3. What to expect:**
-- You will receive a response within **48 hours**
-- If the vulnerability is confirmed it will be fixed as soon as possible
-- You will be credited in the fix commit if you wish
+⏱️ Response time: **48–72 hours**
 
 ---
 
-## ⚠️ Known Security Limitations
+## 🛡️ Security Features
 
-As this is a learning project the following security features are not yet implemented:
+### 🔐 JWT Authentication
 
-- ❌ JWT Token Authentication — currently using Basic Auth
-- ❌ Rate Limiting — no request rate limiting implemented
-- ❌ Email Verification — no email verification on registration
-- ❌ Password Reset — no forgot password feature yet
-- ❌ HTTPS — only HTTP supported locally
-
-These will be added in future versions.
+* Secure login using JWT tokens
+* Stateless authentication (no sessions)
+* Token required for protected routes
+* Token expiry: 24 hours
 
 ---
 
-## 🔒 Environment Variables
+### 🔑 Password Protection
 
-Never commit sensitive data to GitHub. Always use environment variables or keep your `application.properties` in `.gitignore`:
-```properties
-# Never commit these values
-spring.datasource.username=YOUR_USERNAME
-spring.datasource.password=YOUR_PASSWORD
+* BCrypt hashing used
+* No plain-text password storage
+* Hidden in responses using:
+
+```java
+@JsonProperty(access = WRITE_ONLY)
 ```
 
 ---
 
-## 👨‍💻 Author
+### 🚫 Unauthorized Access Handling
 
-**Aryan Sonawane**
-- GitHub: [@Xaryansonawane](https://github.com/Xaryansonawane)
-- LeetCode: [Xaryansonawane](https://leetcode.com/u/Xaryansonawane/)
-- HackerRank: [Xaryansonawane](https://www.hackerrank.com/profile/Xaryansonawane)
-- Instagram: [@Xaryansonawane](https://instagram.com/Xaryansonawane)
+* JWT filter validates every request
+* Invalid/missing token → `401 UNAUTHORIZED`
+* Clean JSON error responses
+
+---
+
+### 🧠 Input Validation
+
+* Empty fields are rejected
+* Proper HTTP status codes returned:
+
+  * 400 BAD REQUEST
+  * 401 UNAUTHORIZED
+  * 404 NOT FOUND
+
+---
+
+### 📁 File Upload Security
+
+* Only image files allowed
+* Validation:
+
+```java
+contentType.startsWith("image/")
 ```
 
-Replace the default GitHub `SECURITY.md` content with this. Then commit with:
+* Max size: **5MB**
+
+---
+
+### 🔄 Business Logic Protection
+
+* ❌ Duplicate Like Prevention
+* ❌ Self Follow Prevention
+* ❌ Self Messaging Prevention
+* ❌ Duplicate Email Prevention
+
+---
+
+### 📦 DTO Security
+
+* No raw entities exposed
+* Sensitive fields hidden
+* Clean API responses
+
+---
+
+### ⚠️ Global Exception Handling
+
+* Centralized error handling using `@ControllerAdvice`
+* Prevents internal data leaks
+
+Example response:
+
+```json
+{
+  "success": false,
+  "message": "ERROR MESSAGE",
+  "data": null,
+  "error": "ERROR CODE"
+}
 ```
-Added SECURITY.md - Security policy and vulnerability reporting guidelines
+
+---
+
+## ⚠️ Known Limitations
+
+* ❗ No refresh tokens
+* ❗ No rate limiting
+* ❗ No HTTPS enforcement (dev mode)
+* ❗ No account lock mechanism
+* ❗ No email verification
+
+---
+
+## 🚀 Recommended Improvements
+
+For production use:
+
+* ✅ Enable HTTPS (SSL/TLS)
+* ✅ Add refresh tokens
+* ✅ Implement rate limiting
+* ✅ Add OAuth2 login
+* ✅ Email verification system
+* ✅ Account lock after failed attempts
+* ✅ Logging & monitoring
+
+---
+
+## 🔐 Best Practices Followed
+
+* Principle of Least Privilege
+* Stateless authentication
+* Layered architecture (Controller → Service → Repository)
+* Input validation
+* No sensitive data exposure
+* Consistent API response format
+
+---
+
+## 🙌 Final Note
+
+Security is not a one-time task — it’s an ongoing process.
+
+If you find any issues or have suggestions, feel free to report or contribute.
+
+---
+
+⭐ Stay secure. Build smart.

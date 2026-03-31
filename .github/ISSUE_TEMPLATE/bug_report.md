@@ -1,82 +1,129 @@
 ---
-name: Bug report
-about: Create a report to help us improve
-title: ''
-labels: ''
-assignees: ''
 
----
-
----
 name: 🐛 Bug Report
-about: Report a bug to help us improve
-title: '[BUG] '
+about: Report a bug to help improve the Social Media RESTful API
+title: "[BUG] "
 labels: bug
 assignees: Xaryansonawane
----
+-------------------------
 
 ## 🐛 Bug Description
-A clear and concise description of the bug.
+
+Provide a clear and concise description of the issue.
 
 ---
 
 ## 🔁 Steps to Reproduce
+
+Steps to reproduce the behavior:
+
 1. Send request to endpoint `...`
-2. With body `...`
-3. See error
+2. Include headers (if required):
+
+   ```http
+   Authorization: Bearer <JWT_TOKEN>
+   ```
+3. Provide request body `...`
+4. Observe the response
 
 ---
 
 ## ✅ Expected Behavior
-What you expected to happen.
+
+Describe what you expected to happen.
 
 ---
 
 ## ❌ Actual Behavior
-What actually happened.
+
+Describe what actually happened.
 
 ---
 
-## 📋 Error Message
-```
-Paste the full error message here
+## 📋 Error Message / Logs
+
+```text
+Paste full error message, stack trace, or logs here
 ```
 
 ---
 
-## 🌐 API Details
-- **Endpoint:** e.g. POST /user/login
-- **Request Body:**
+## 🌐 API Request Details
+
+**Endpoint:**
+
+```
+POST /auth/login
+```
+
+**Headers:**
+
+```http
+Authorization: Bearer <JWT_TOKEN>
+Content-Type: application/json
+```
+
+**Request Body:**
+
 ```json
 {
-    "email": "example@gmail.com",
-    "password": "password123"
+  "email": "example@gmail.com",
+  "password": "password123"
 }
 ```
-- **Response Received:**
+
+**Response Received:**
+
 ```json
 {
-    "success": false,
-    "message": "SOMETHING WENT WRONG",
-    "data": null,
-    "error": "..."
+  "success": false,
+  "message": "ERROR MESSAGE",
+  "data": null,
+  "error": "ERROR_CODE"
 }
 ```
+
+---
+
+## 🔐 Authentication Context
+
+* Is the endpoint protected? (Yes/No)
+* Was a valid JWT token provided? (Yes/No)
+* Token expired? (Yes/No)
 
 ---
 
 ## 💻 Environment
-- **Java Version:** 21
-- **MySQL Version:** 8.0.45
-- **OS:** Windows / Mac / Linux
-- **Tool:** Postman / Browser / Other
+
+* **Java Version:** 21
+* **Spring Boot Version:** 3.4.3
+* **MySQL Version:** 8.0.x
+* **OS:** Windows / macOS / Linux
+* **Client Tool:** Postman / Browser / Curl
 
 ---
 
-## 📸 Screenshots
-If applicable add screenshots to help explain the problem.
+## 📸 Screenshots / Proof
+
+Add screenshots, logs, or API responses if applicable.
+
+---
+
+## 🧪 Possible Root Cause (Optional)
+
+If you have any idea what might be causing the issue, mention it here.
 
 ---
 
 ## 📝 Additional Context
-Add any other context about the problem here.
+
+Add any additional information that may help debug the issue.
+
+---
+
+## ✔️ Checklist
+
+* [ ] I have checked existing issues
+* [ ] I have provided all required details
+* [ ] I have included request/response data
+* [ ] I have verified the issue is reproducible

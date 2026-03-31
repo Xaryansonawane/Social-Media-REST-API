@@ -1,84 +1,127 @@
 # 🤝 Contributing to Social Media REST API
 
+---
+
+## 📱 Social Media REST API – Contribution Guide
+
+A fully functional, production-structured **RESTful backend** built with **Spring Boot, Spring Security, JWT, JPA, and MySQL**.
+
+We welcome contributions from everyone — whether you're a beginner or an experienced developer 💙
+
+---
+
+[![Java](https://img.shields.io/badge/Java-21-orange?style=flat-square\&logo=java)](https://www.oracle.com/java/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.3-brightgreen?style=flat-square\&logo=springboot)](https://spring.io/projects/spring-boot)
+[![Spring Security](https://img.shields.io/badge/Spring%20Security-6.4.3-blue?style=flat-square\&logo=springsecurity)](https://spring.io/projects/spring-security)
+[![JWT](https://img.shields.io/badge/JWT-0.12.7-purple?style=flat-square\&logo=jsonwebtokens)](https://github.com/jwtk/jjwt)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0.45-blue?style=flat-square\&logo=mysql)](https://www.mysql.com/)
+[![Maven](https://img.shields.io/badge/Maven-3.x-red?style=flat-square\&logo=apachemaven)](https://maven.apache.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
+
+---
+
+## 🙌 Welcome
+
 First of all, thank you for taking the time to contribute! 🎉
-Every contribution is appreciated and helps make this project better.
+Every contribution — big or small — helps improve this project.
 
 ---
 
 ## 📋 Table of Contents
 
-- [Code of Conduct](#code-of-conduct)
-- [How Can I Contribute?](#how-can-i-contribute)
-- [Getting Started](#getting-started)
-- [Project Structure](#project-structure)
-- [Coding Guidelines](#coding-guidelines)
-- [Commit Message Guidelines](#commit-message-guidelines)
-- [Pull Request Process](#pull-request-process)
-- [Reporting Bugs](#reporting-bugs)
-- [Suggesting Features](#suggesting-features)
+* Code of Conduct
+* Ways to Contribute
+* Getting Started
+* Project Structure
+* Coding Guidelines
+* Commit Guidelines
+* Pull Request Process
+* Reporting Bugs
+* Suggesting Features
 
 ---
 
 ## 📜 Code of Conduct
 
-By participating in this project, you agree to maintain a respectful and inclusive environment for everyone. Be kind, be helpful, and be constructive.
+Please maintain a respectful and collaborative environment:
+
+* Be kind and supportive
+* Give constructive feedback
+* Respect different perspectives
 
 ---
 
-## 💡 How Can I Contribute?
+## 💡 Ways to Contribute
 
-There are many ways you can contribute to this project:
+You can contribute in many ways:
 
-- 🐛 **Report bugs** — found something broken? Let us know!
-- ✨ **Suggest features** — have a great idea? We would love to hear it!
-- 🔧 **Fix bugs** — pick an open issue and submit a fix
-- 📝 **Improve documentation** — help make the docs clearer
-- 🧪 **Write tests** — help improve code coverage
-- 🔍 **Code review** — review open pull requests
+* 🐛 Report bugs
+* ✨ Suggest new features
+* 🔧 Fix issues
+* 📝 Improve documentation
+* 🧪 Add test cases
+* 🔍 Review pull requests
 
 ---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Java 21
-- MySQL 8.0
-- Maven 3.x
-- Git
 
-### Fork and Clone
+* Java 21
+* MySQL 8.0
+* Maven 3.x
+* Git
+
+---
+
+### 🔧 Setup Steps
 
 **1. Fork the repository**
 
-Click the **Fork** button on the top right of the repository page.
+Click the **Fork** button on GitHub.
+
+---
 
 **2. Clone your fork**
+
 ```bash
 git clone https://github.com/YOUR_USERNAME/Social-Media-REST-API.git
 cd Social-Media-REST-API
 ```
 
-**3. Add upstream remote**
+---
+
+**3. Add upstream repository**
+
 ```bash
 git remote add upstream https://github.com/Xaryansonawane/Social-Media-REST-API.git
 ```
 
-**4. Create the database**
+---
+
+**4. Create database**
+
 ```sql
 CREATE DATABASE SocialApp_DB;
 ```
 
+---
+
 **5. Configure application.properties**
+
 ```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/SocialApp_DB?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+spring.datasource.url=jdbc:mysql://localhost:3306/SocialApp_DB
 spring.datasource.username=YOUR_USERNAME
 spring.datasource.password=YOUR_PASSWORD
 spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
 server.port=8080
 ```
 
-**6. Run the application**
+---
+
+**6. Run the project**
+
 ```bash
 mvn spring-boot:run
 ```
@@ -86,216 +129,191 @@ mvn spring-boot:run
 ---
 
 ## 📁 Project Structure
+
 ```
 SocialApp/
-├── src/main/java/com/example/SocialApp/
-│   ├── Config/          → Security configuration
-│   ├── controllers/     → REST API endpoints
-│   ├── DTOs/            → Data Transfer Objects
-│   ├── models/          → JPA Entity classes
-│   ├── repository/      → Spring Data JPA repositories
-│   ├── services/        → Business logic
-│   └── Utility/         → ApiResponse and GlobalExceptionHandler
-├── sql/                 → SQL scripts for database setup
-├── pom.xml              → Maven dependencies
-└── README.md            → Project documentation
+├── controllers/     → API endpoints
+├── services/        → Business logic
+├── repository/      → Database layer
+├── models/          → Entities
+├── DTOs/            → Response objects
+├── Utility/         → ApiResponse & Exception Handler
+└── config/          → Security configuration
 ```
 
 ---
 
 ## 📏 Coding Guidelines
 
-Please follow these guidelines when contributing:
+### Java Style
 
-### Java Code Style
-- Use **camelCase** for variable and method names
-- Use **PascalCase** for class names
-- Use **UPPER_SNAKE_CASE** for constants
-- Always add proper **getters and setters**
-- Keep methods **short and focused** — one method, one responsibility
-
-### API Response
-- Always wrap responses in **ApiResponse** wrapper
-- Always use **CAPITAL LETTERS** for response messages
-- Always use proper **HTTP status codes**:
-  - `200 OK` — success
-  - `201 CREATED` — resource created
-  - `400 BAD REQUEST` — invalid input
-  - `401 UNAUTHORIZED` — invalid credentials
-  - `404 NOT FOUND` — resource not found
-  - `500 INTERNAL SERVER ERROR` — server error
-
-### Exception Handling
-- Always use **ResponseStatusException** instead of RuntimeException
-- Always include the **resource ID** in the error message
-- Example:
-```java
-throw new ResponseStatusException(
-    HttpStatus.NOT_FOUND, "USER NOT FOUND WITH ID: " + id
-);
-```
-
-### DTOs
-- Never return raw entity objects that contain sensitive data like passwords
-- Always use **DTOs** for API responses
-- Use **@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)** on password fields
+* camelCase → variables & methods
+* PascalCase → class names
+* UPPER_CASE → constants
 
 ---
 
-## 📝 Commit Message Guidelines
+### Best Practices
 
-Follow this format for commit messages:
+* Keep methods short and clean
+* Follow single responsibility principle
+* Write readable code
+
+---
+
+### API Rules
+
+* Always use **ApiResponse** wrapper
+* Use proper HTTP status codes:
+
+| Code | Meaning      |
+| ---- | ------------ |
+| 200  | Success      |
+| 201  | Created      |
+| 400  | Bad Request  |
+| 401  | Unauthorized |
+| 404  | Not Found    |
+| 500  | Server Error |
+
+---
+
+### Exception Handling
+
+```java
+throw new ResponseStatusException(
+    HttpStatus.NOT_FOUND,
+    "USER NOT FOUND WITH ID: " + id
+);
+```
+
+---
+
+### DTO Rules
+
+* Never return raw entities
+* Hide sensitive data (passwords)
+* Use DTOs for all responses
+
+---
+
+## 📝 Commit Guidelines
+
+### Format
+
 ```
 type: short description
-
-Extended description (optional)
 ```
 
 ### Types
-| Type | Description |
-|------|-------------|
-| `feat` | New feature |
-| `fix` | Bug fix |
-| `docs` | Documentation changes |
-| `refactor` | Code refactoring |
-| `test` | Adding tests |
-| `chore` | Maintenance tasks |
 
-### Examples
+| Type     | Description      |
+| -------- | ---------------- |
+| feat     | New feature      |
+| fix      | Bug fix          |
+| docs     | Documentation    |
+| refactor | Code improvement |
+| test     | Testing          |
+| chore    | Maintenance      |
+
+---
+
+### Example
+
 ```
-feat: Add JWT token authentication
-fix: Fix duplicate like prevention bug
-docs: Update API endpoints in README
-refactor: Replace RuntimeException with ResponseStatusException
-test: Add unit tests for UserService
+feat: Add JWT authentication
+fix: Prevent duplicate likes
+docs: Update README
 ```
 
 ---
 
 ## 🔄 Pull Request Process
 
-**1. Create a new branch**
+**1. Create branch**
+
 ```bash
-git checkout -b feature/your-feature-name
+git checkout -b feature/your-feature
 ```
 
-**2. Make your changes**
+---
 
-Write clean, well-documented code following the coding guidelines above.
+**2. Make changes**
 
-**3. Test your changes**
+Write clean and tested code.
 
-Make sure the application runs without errors:
+---
+
+**3. Commit**
+
 ```bash
-mvn spring-boot:run
+git commit -m "feat: Add new feature"
 ```
 
-**4. Commit your changes**
+---
+
+**4. Push**
+
 ```bash
-git add .
-git commit -m "feat: Add your feature description"
+git push origin feature/your-feature
 ```
 
-**5. Push to your fork**
-```bash
-git push origin feature/your-feature-name
-```
+---
 
-**6. Open a Pull Request**
+**5. Open PR**
 
-- Go to your fork on GitHub
-- Click **New Pull Request**
-- Select your branch
-- Fill in the PR template
-- Click **Create Pull Request**
+* Go to GitHub
+* Click **New Pull Request**
+* Submit your changes
 
-### Pull Request Checklist
-- [ ] Code follows the coding guidelines
-- [ ] Application runs without errors
-- [ ] API responses use ApiResponse wrapper
-- [ ] Proper HTTP status codes are used
-- [ ] No sensitive data like passwords exposed in responses
-- [ ] README updated if new endpoints added
+---
+
+### ✅ Checklist
+
+* Code follows guidelines
+* No errors in application
+* API responses are consistent
+* No sensitive data exposed
+* Documentation updated
 
 ---
 
 ## 🐛 Reporting Bugs
 
-To report a bug please create an issue with:
+Create an issue with:
 
-- **Title** — clear and descriptive
-- **Description** — what happened vs what you expected
-- **Steps to reproduce** — how to reproduce the bug
-- **Error message** — paste the full error from console
-- **Environment** — Java version, MySQL version, OS
-
-### Bug Report Template
-```
-**Bug Description:**
-A clear description of the bug.
-
-**Steps to Reproduce:**
-1. Send POST request to /user/login
-2. With wrong password
-3. See error
-
-**Expected Behavior:**
-Should return 401 UNAUTHORIZED
-
-**Actual Behavior:**
-Returns 500 INTERNAL SERVER ERROR
-
-**Error Message:**
-Paste error here
-
-**Environment:**
-- Java: 21
-- MySQL: 8.0.45
-- OS: Windows 11
-```
+* Description
+* Steps to reproduce
+* Expected vs actual behavior
+* Error logs
+* Environment details
 
 ---
 
 ## 💡 Suggesting Features
 
-To suggest a new feature please create an issue with:
+Include:
 
-- **Title** — clear and descriptive
-- **Problem** — what problem does this feature solve?
-- **Solution** — how should it work?
-- **API Design** — what endpoint and response should it have?
-
-### Feature Request Template
-```
-**Feature Description:**
-Add JWT token based authentication
-
-**Problem:**
-Currently there is no token based auth system.
-Users have to send credentials with every request.
-
-**Proposed Solution:**
-After login return a JWT token.
-User sends token in Authorization header for protected routes.
-
-**API Design:**
-POST /user/login
-Response: { "token": "eyJhbGc..." }
-
-GET /posts
-Headers: { "Authorization": "Bearer eyJhbGc..." }
-```
+* Problem description
+* Proposed solution
+* API design
 
 ---
 
 ## 📬 Contact
 
 **Aryan Sonawane**
-- GitHub: [@Xaryansonawane](https://github.com/Xaryansonawane)
-- LeetCode: [Xaryansonawane](https://leetcode.com/u/Xaryansonawane/)
-- HackerRank: [Xaryansonawane](https://www.hackerrank.com/profile/Xaryansonawane)
-- Instagram: [@Xaryansonawane](https://instagram.com/Xaryansonawane)
+
+* GitHub: https://github.com/Xaryansonawane
+* LeetCode: https://leetcode.com/u/Xaryansonawane/
+* HackerRank: https://www.hackerrank.com/profile/Xaryansonawane
+* Instagram: https://instagram.com/Xaryansonawane
 
 ---
 
-Thank you for contributing! Together we can make this project even better! 🚀⚙️
+## 🙏 Final Note
+
+Your contributions make this project better for everyone.
+
+⭐ If you like this project, consider giving it a star!
+
+🚀 Happy Coding!

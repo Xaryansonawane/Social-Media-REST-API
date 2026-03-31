@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/comments")
+@RequestMapping("/comment")
 public class CommentController {
 
     private final CommentService commentService;
@@ -18,10 +18,27 @@ public class CommentController {
         this.commentService = commentService;
     }
 
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<Comment>>> fetchAllComments() {
+        List<Comment> comments = commentService.fetchAllComments();
+        if (comments.isEmpty()) {
+            return ResponseEntity.status(404)
+                    .body(ApiResponse.error("NO COMMENTS FOUND", "EMPTY_LIST"));
+        }
+        return ResponseEntity.ok(ApiResponse.success("COMMENTS FETCHED SUCCESSFULLY", comments));
+    }
+
     @PostMapping
-    public ResponseEntity<ApiResponse<Comment>> insertComment(@RequestBody Comment comment) {
+    public ResponseEntity<ApiResponse<Comment>> createComment(@RequestBody Comment comment) {
         Comment result = commentService.insertComment(comment);
-        return ResponseEntity.ok(ApiResponse.success("COMMENT ADDED SUCCESSFULLY", result));
+        return ResponseEntity.status(201)
+                .body(ApiResponse.success("COMMENT CREATED SUCCESSFULLY", result));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<Comment>> fetchByCommentId(@PathVariable long id) {
+        Comment comment = commentService.fetchCommentById(id);
+        return ResponseEntity.ok(ApiResponse.success("COMMENT FETCHED SUCCESSFULLY", comment));
     }
 
     @GetMapping("/post/{postId}")

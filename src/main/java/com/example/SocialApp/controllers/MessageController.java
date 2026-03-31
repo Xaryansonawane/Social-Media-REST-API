@@ -8,10 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/messages")
+@RequestMapping("/message")
 public class MessageController {
 
     private final MessageService messageService;
@@ -20,46 +19,65 @@ public class MessageController {
         this.messageService = messageService;
     }
 
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<Message>>> fetchAllMessages() {
+        List<Message> messages = messageService.fetchAllMessage();
+        return ResponseEntity.ok(ApiResponse.success("MESSAGES FETCHED SUCCESSFULLY", messages));
+    }
+
     @PostMapping
-    public ResponseEntity<ApiResponse<MessageDTO>> insertMessage(@RequestBody Message message) {
-        MessageDTO result = messageService.insertMessage(message);
-        return ResponseEntity.ok(ApiResponse.success("MESSAGE SENT SUCCESSFULLY", result));
+    public ResponseEntity<ApiResponse<Message>> createMessage(@RequestBody Message message) {
+        Message result = messageService.insertMessage(message);
+        return ResponseEntity.status(201)
+                .body(ApiResponse.success("MESSAGE SENT SUCCESSFULLY", result));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<Optional<MessageDTO>>> getMessageById(@PathVariable Long id) {
-        Optional<MessageDTO> message = messageService.getMessageById(id);
+    public ResponseEntity<ApiResponse<Message>> fetchByMsgId(@PathVariable long id) {
+        Message message = messageService.fetchMessageById(id);
         return ResponseEntity.ok(ApiResponse.success("MESSAGE FETCHED SUCCESSFULLY", message));
     }
 
+    @GetMapping("/chat/{user1}/{user2}")
+    public ResponseEntity<ApiResponse<List<MessageDTO>>> getChat(
+            @PathVariable long user1,
+            @PathVariable long user2) {
+        List<MessageDTO> messages = messageService.getChat(user1, user2);
+        if (messages == null || messages.isEmpty()) {
+            return ResponseEntity.status(404)
+                    .body(ApiResponse.error("NO CHAT FOUND", "CHAT_NOT_FOUND"));
+        }
+        return ResponseEntity.ok(ApiResponse.success("CHAT FETCHED SUCCESSFULLY", messages));
+    }
+
     @GetMapping("/sender/{senderId}")
-    public ResponseEntity<ApiResponse<List<MessageDTO>>> getMessagesBySender(@PathVariable Long senderId) {
-        List<MessageDTO> messages = messageService.getMessagesBySender(senderId);
+    public ResponseEntity<ApiResponse<List<Message>>> getMessagesBySender(@PathVariable Long senderId) {
+        List<Message> messages = messageService.getMessagesBySender(senderId);
         return ResponseEntity.ok(ApiResponse.success("MESSAGES FETCHED SUCCESSFULLY", messages));
     }
 
     @GetMapping("/receiver/{receiverId}")
-    public ResponseEntity<ApiResponse<List<MessageDTO>>> getMessagesByReceiver(@PathVariable Long receiverId) {
-        List<MessageDTO> messages = messageService.getMessagesByReceiver(receiverId);
+    public ResponseEntity<ApiResponse<List<Message>>> getMessagesByReceiver(@PathVariable Long receiverId) {
+        List<Message> messages = messageService.getMessagesByReceiver(receiverId);
         return ResponseEntity.ok(ApiResponse.success("MESSAGES FETCHED SUCCESSFULLY", messages));
     }
 
     @GetMapping("/between/{senderId}/{receiverId}")
-    public ResponseEntity<ApiResponse<List<MessageDTO>>> getMessagesBetweenUsers(
+    public ResponseEntity<ApiResponse<List<Message>>> getMessagesBetweenUsers(
             @PathVariable Long senderId, @PathVariable Long receiverId) {
-        List<MessageDTO> messages = messageService.getMessagesBetweenUsers(senderId, receiverId);
+        List<Message> messages = messageService.getMessagesBetweenUsers(senderId, receiverId);
         return ResponseEntity.ok(ApiResponse.success("CONVERSATION FETCHED SUCCESSFULLY", messages));
     }
 
     @GetMapping("/unseen/{receiverId}")
-    public ResponseEntity<ApiResponse<List<MessageDTO>>> getUnreadMessages(@PathVariable Long receiverId) {
-        List<MessageDTO> messages = messageService.getUnreadMessages(receiverId);
+    public ResponseEntity<ApiResponse<List<Message>>> getUnreadMessages(@PathVariable Long receiverId) {
+        List<Message> messages = messageService.getUnreadMessages(receiverId);
         return ResponseEntity.ok(ApiResponse.success("UNREAD MESSAGES FETCHED SUCCESSFULLY", messages));
     }
 
     @PatchMapping("/{id}/seen")
-    public ResponseEntity<ApiResponse<MessageDTO>> markMessageAsSeen(@PathVariable Long id) {
-        MessageDTO message = messageService.markMessageAsSeen(id);
+    public ResponseEntity<ApiResponse<Message>> markMessageAsSeen(@PathVariable Long id) {
+        Message message = messageService.markMessageAsSeen(id);
         return ResponseEntity.ok(ApiResponse.success("MESSAGE MARKED AS SEEN", message));
     }
 

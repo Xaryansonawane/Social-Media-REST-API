@@ -4,8 +4,8 @@ import com.example.SocialApp.models.Comment;
 import com.example.SocialApp.models.Post;
 import com.example.SocialApp.models.User;
 import com.example.SocialApp.repository.CommentRepository;
-import com.example.SocialApp.repository.PostRepository;
-import com.example.SocialApp.repository.UserRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -16,60 +16,64 @@ import java.util.List;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final UserRepository userRepository;
-    private final PostRepository postRepository;
 
-    public CommentService(CommentRepository commentRepository, UserRepository userRepository, PostRepository postRepository) {
+    @PersistenceContext
+    EntityManager entityManager;
+
+    public CommentService(CommentRepository commentRepository) {
         this.commentRepository = commentRepository;
-        this.userRepository = userRepository;
-        this.postRepository = postRepository;
     }
 
     public Comment insertComment(Comment comment) {
+        Long userId = comment.getUser().getId();
+        Long postId = comment.getPost().getId();
 
-        User existingUser = userRepository.findById(comment.getUser().getId())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "USER NOT FOUND WITH ID: " + comment.getUser().getId()
-                ));
+        User user = entityManager.find(User.class, userId);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "USER NOT FOUND WITH ID: " + userId);
+        }
 
-        Post existingPost = postRepository.findById(comment.getPost().getId())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "POST NOT FOUND WITH ID: " + comment.getPost().getId()
-                ));
+        Post post = entityManager.find(Post.class, postId);
+        if (post == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "POST NOT FOUND WITH ID: " + postId);
+        }
 
-        comment.setUser(existingUser);
-        comment.setPost(existingPost);
+        comment.setUser(user);
+        comment.setPost(post);
 
         Comment savedComment = commentRepository.save(comment);
 
-        existingPost.setCommentCount(existingPost.getCommentCount() + 1);
-        postRepository.save(existingPost);
+        post.setCommentCount(post.getCommentCount() + 1);
+        entityManager.merge(post);
 
         return savedComment;
     }
 
+    public List<Comment> fetchAllComments() {
+        return commentRepository.findAll();
+    }
+
     public List<Comment> getCommentsByPost(Long postId) {
-        if (!postRepository.existsById(postId)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "POST NOT FOUND WITH ID: " + postId
-            );
-        }
         return commentRepository.findByPostId(postId);
     }
 
-    public void deleteComment(Long id) {
+    public Comment fetchCommentById(Long id) {
+        return commentRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "COMMENT NOT FOUND WITH ID: " + id
+                ));
+    }
 
+    public void deleteComment(Long id) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "COMMENT NOT FOUND WITH ID: " + id
                 ));
-
         Post post = comment.getPost();
         commentRepository.deleteById(id);
-
         if (post.getCommentCount() > 0) {
             post.setCommentCount(post.getCommentCount() - 1);
-            postRepository.save(post);
+            entityManager.merge(post);
         }
     }
 }

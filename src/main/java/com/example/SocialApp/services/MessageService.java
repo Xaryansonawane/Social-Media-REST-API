@@ -4,12 +4,14 @@ import com.example.SocialApp.DTOs.MessageDTO;
 import com.example.SocialApp.models.Message;
 import com.example.SocialApp.models.User;
 import com.example.SocialApp.repository.MessageRepository;
-import com.example.SocialApp.repository.UserRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,138 +19,98 @@ import java.util.Optional;
 public class MessageService {
 
     private final MessageRepository messageRepository;
-    private final UserRepository userRepository;
 
-    public MessageService(MessageRepository messageRepository, UserRepository userRepository) {
+    @PersistenceContext
+    EntityManager entityManager;
+
+    public MessageService(MessageRepository messageRepository) {
         this.messageRepository = messageRepository;
-        this.userRepository = userRepository;
     }
 
-    private MessageDTO toDTO(Message message) {
-        return new MessageDTO(
-                message.getId(),
-                message.getSender().getId(),
-                message.getSender().getFullName(),
-                message.getSender().getUsername(),
-                message.getReceiver().getId(),
-                message.getReceiver().getFullName(),
-                message.getReceiver().getUsername(),
-                message.getContent(),
-                message.isSeen(),
-                message.getCreatedAt()
-        );
-    }
+    public Message insertMessage(Message message) {
+        long senderId = message.getSender().getId();
+        long receiverId = message.getReceiver().getId();
 
-    public MessageDTO insertMessage(Message message) {
-
-        User sender = userRepository.findById(message.getSender().getId())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "SENDER NOT FOUND WITH ID: " + message.getSender().getId()
-                ));
-
-        User receiver = userRepository.findById(message.getReceiver().getId())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "RECEIVER NOT FOUND WITH ID: " + message.getReceiver().getId()
-                ));
-
-        // Prevent sending message to yourself
-        if (sender.getId().equals(receiver.getId())) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "CANNOT SEND MESSAGE TO YOURSELF"
-            );
+        if (senderId == receiverId) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "CANNOT SEND MESSAGE TO YOURSELF");
         }
+
+        User sender = entityManager.getReference(User.class, senderId);
+        User receiver = entityManager.getReference(User.class, receiverId);
 
         message.setSender(sender);
         message.setReceiver(receiver);
 
-        Message savedMessage = messageRepository.save(message);
-
-        sender.setMessageCount(sender.getMessageCount() + 1);
-        receiver.setMessageCount(receiver.getMessageCount() + 1);
-        userRepository.save(sender);
-        userRepository.save(receiver);
-
-        return toDTO(savedMessage);
+        return messageRepository.save(message);
     }
 
-    public Optional<MessageDTO> getMessageById(Long id) {
+    public List<Message> fetchAllMessage() {
+        return messageRepository.findAll();
+    }
+
+    public Message fetchMessageById(Long id) {
         return messageRepository.findById(id)
-                .map(this::toDTO);
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "MESSAGE NOT FOUND WITH ID: " + id
+                ));
     }
 
-    public List<MessageDTO> getMessagesBySender(Long senderId) {
-        if (!userRepository.existsById(senderId)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "SENDER NOT FOUND WITH ID: " + senderId
-            );
-        }
-        return messageRepository.findBySender_Id(senderId)
-                .stream().map(this::toDTO).toList();
+    public Optional<Message> getMessageById(Long id) {
+        return messageRepository.findById(id);
     }
 
-    public List<MessageDTO> getMessagesByReceiver(Long receiverId) {
-        if (!userRepository.existsById(receiverId)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "RECEIVER NOT FOUND WITH ID: " + receiverId
-            );
-        }
-        return messageRepository.findByReceiver_Id(receiverId)
-                .stream().map(this::toDTO).toList();
+    public List<Message> getMessagesBySender(Long senderId) {
+        return messageRepository.findBySender_Id(senderId);
     }
 
-    public List<MessageDTO> getMessagesBetweenUsers(Long senderId, Long receiverId) {
-        if (!userRepository.existsById(senderId)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "USER NOT FOUND WITH ID: " + senderId
-            );
-        }
-        if (!userRepository.existsById(receiverId)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "USER NOT FOUND WITH ID: " + receiverId
-            );
-        }
-        List<Message> messages1 = messageRepository.findBySender_IdAndReceiver_Id(senderId, receiverId);
-        List<Message> messages2 = messageRepository.findBySender_IdAndReceiver_Id(receiverId, senderId);
-        List<Message> allMessages = new ArrayList<>();
-        allMessages.addAll(messages1);
-        allMessages.addAll(messages2);
-        return allMessages.stream().map(this::toDTO).toList();
+    public List<Message> getMessagesByReceiver(Long receiverId) {
+        return messageRepository.findByReceiver_Id(receiverId);
     }
 
-    public List<MessageDTO> getUnreadMessages(Long receiverId) {
-        if (!userRepository.existsById(receiverId)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "RECEIVER NOT FOUND WITH ID: " + receiverId
-            );
-        }
-        return messageRepository.findByReceiver_IdAndIsSeenFalse(receiverId)
-                .stream().map(this::toDTO).toList();
+    public List<MessageDTO> getChat(long user1, long user2) {
+        List<Message> aToB = messageRepository.findBySender_IdAndReceiver_IdOrderByCreatedAtAsc(user1, user2);
+        List<Message> bToA = messageRepository.findBySender_IdAndReceiver_IdOrderByCreatedAtAsc(user2, user1);
+
+        List<Message> all = new ArrayList<>();
+        all.addAll(aToB);
+        all.addAll(bToA);
+        all.sort(Comparator.comparing(Message::getCreatedAt));
+
+        return all.stream()
+                .map(m -> new MessageDTO(
+                        m.getSender().getUsername(),
+                        m.getContent()
+                ))
+                .toList();
     }
 
-    public MessageDTO markMessageAsSeen(Long id) {
+    public List<Message> getMessagesBetweenUsers(Long senderId, Long receiverId) {
+        List<Message> aToB = messageRepository.findBySender_IdAndReceiver_Id(senderId, receiverId);
+        List<Message> bToA = messageRepository.findBySender_IdAndReceiver_Id(receiverId, senderId);
+        List<Message> all = new ArrayList<>();
+        all.addAll(aToB);
+        all.addAll(bToA);
+        all.sort(Comparator.comparing(Message::getCreatedAt));
+        return all;
+    }
+
+    public List<Message> getUnreadMessages(Long receiverId) {
+        return messageRepository.findByReceiver_IdAndIsSeenFalse(receiverId);
+    }
+
+    public Message markMessageAsSeen(Long id) {
         Message message = messageRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "MESSAGE NOT FOUND WITH ID: " + id
                 ));
         message.setSeen(true);
-        return toDTO(messageRepository.save(message));
+        return messageRepository.save(message);
     }
 
     public void deleteMessage(Long id) {
-        Message message = messageRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "MESSAGE NOT FOUND WITH ID: " + id
-                ));
-        User sender = message.getSender();
-        User receiver = message.getReceiver();
+        if (!messageRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "MESSAGE NOT FOUND WITH ID: " + id);
+        }
         messageRepository.deleteById(id);
-        if (sender.getMessageCount() > 0) {
-            sender.setMessageCount(sender.getMessageCount() - 1);
-            userRepository.save(sender);
-        }
-        if (receiver.getMessageCount() > 0) {
-            receiver.setMessageCount(receiver.getMessageCount() - 1);
-            userRepository.save(receiver);
-        }
     }
 }

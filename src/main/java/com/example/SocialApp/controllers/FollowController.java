@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/follows")
+@RequestMapping("/follow")
 public class FollowController {
 
     private final FollowService followService;
@@ -18,10 +18,23 @@ public class FollowController {
         this.followService = followService;
     }
 
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<Follow>>> fetchAllFollows() {
+        List<Follow> follows = followService.fetchAllFollow();
+        return ResponseEntity.ok(ApiResponse.success("FOLLOWS FETCHED SUCCESSFULLY", follows));
+    }
+
     @PostMapping
-    public ResponseEntity<ApiResponse<Follow>> insertFollow(@RequestBody Follow follow) {
+    public ResponseEntity<ApiResponse<Follow>> createFollow(@RequestBody Follow follow) {
         Follow result = followService.insertFollow(follow);
-        return ResponseEntity.ok(ApiResponse.success("FOLLOWED SUCCESSFULLY", result));
+        return ResponseEntity.status(201)
+                .body(ApiResponse.success("FOLLOWED SUCCESSFULLY", result));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<Follow>> fetchByFollowId(@PathVariable long id) {
+        Follow follow = followService.fetchFollowById(id);
+        return ResponseEntity.ok(ApiResponse.success("FOLLOW FETCHED SUCCESSFULLY", follow));
     }
 
     @GetMapping("/following/{followerId}")

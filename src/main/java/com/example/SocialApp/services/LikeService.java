@@ -4,8 +4,8 @@ import com.example.SocialApp.models.Like;
 import com.example.SocialApp.models.Post;
 import com.example.SocialApp.models.User;
 import com.example.SocialApp.repository.LikeRepository;
-import com.example.SocialApp.repository.PostRepository;
-import com.example.SocialApp.repository.UserRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -16,37 +16,53 @@ import java.util.List;
 public class LikeService {
 
     private final LikeRepository likeRepository;
-    private final UserRepository userRepository;
-    private final PostRepository postRepository;
 
-    public LikeService(LikeRepository likeRepository, UserRepository userRepository, PostRepository postRepository) {
+    @PersistenceContext
+    EntityManager entityManager;
+
+    public LikeService(LikeRepository likeRepository) {
         this.likeRepository = likeRepository;
-        this.userRepository = userRepository;
-        this.postRepository = postRepository;
     }
 
     public Like insertLike(Like like) {
-        User existingUser = userRepository.findById(like.getUser().getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "USER NOT FOUND"));
+        Long userId = like.getUser().getId();
+        Long postId = like.getPost().getId();
 
-        Post existingPost = postRepository.findById(like.getPost().getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "POST NOT FOUND"));
+        User user = entityManager.find(User.class, userId);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "USER NOT FOUND WITH ID: " + userId);
+        }
 
-        // Prevent duplicate likes
-        boolean alreadyLiked = likeRepository.existsByUser_IdAndPost_Id(existingUser.getId(), existingPost.getId());
+        Post post = entityManager.find(Post.class, postId);
+        if (post == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "POST NOT FOUND WITH ID: " + postId);
+        }
+
+        boolean alreadyLiked = likeRepository.existsByUser_IdAndPost_Id(userId, postId);
         if (alreadyLiked) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "POST ALREADY LIKED BY USER");
         }
 
-        like.setUser(existingUser);
-        like.setPost(existingPost);
+        like.setUser(user);
+        like.setPost(post);
 
         Like savedLike = likeRepository.save(like);
 
-        existingPost.setLikeCount(existingPost.getLikeCount() + 1);
-        postRepository.save(existingPost);
+        post.setLikeCount(post.getLikeCount() + 1);
+        entityManager.merge(post);
 
         return savedLike;
+    }
+
+    public List<Like> fetchAllLike() {
+        return likeRepository.findAll();
+    }
+
+    public Like fetchLikeById(Long id) {
+        return likeRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "LIKE NOT FOUND WITH ID: " + id
+                ));
     }
 
     public List<Like> getLikesByPost(Long postId) {
@@ -59,12 +75,14 @@ public class LikeService {
 
     public void deleteLike(Long id) {
         Like like = likeRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "LIKE NOT FOUND"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "LIKE NOT FOUND WITH ID: " + id
+                ));
         Post post = like.getPost();
         likeRepository.deleteById(id);
         if (post.getLikeCount() > 0) {
             post.setLikeCount(post.getLikeCount() - 1);
-            postRepository.save(post);
+            entityManager.merge(post);
         }
     }
 }

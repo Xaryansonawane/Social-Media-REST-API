@@ -1,11 +1,11 @@
 ---
 
-name: 🐛 Bug Report
-about: Report a bug to help improve the Social Media RESTful API
+name: "🐛 Bug Report"
+about: "Report a bug to help improve the Social Media RESTful API"
 title: "[BUG] "
-labels: bug
-assignees: Xaryansonawane
--------------------------
+labels: ["bug"]
+assignees: ["Xaryansonawane"]
+-----------------------------
 
 ## 🐛 Bug Description
 
@@ -15,14 +15,9 @@ Provide a clear and concise description of the issue.
 
 ## 🔁 Steps to Reproduce
 
-Steps to reproduce the behavior:
-
 1. Send request to endpoint `...`
 2. Include headers (if required):
-
-   ```http
    Authorization: Bearer <JWT_TOKEN>
-   ```
 3. Provide request body `...`
 4. Observe the response
 
@@ -42,7 +37,7 @@ Describe what actually happened.
 
 ## 📋 Error Message / Logs
 
-```text
+```
 Paste full error message, stack trace, or logs here
 ```
 
@@ -51,17 +46,11 @@ Paste full error message, stack trace, or logs here
 ## 🌐 API Request Details
 
 **Endpoint:**
-
-```
 POST /auth/login
-```
 
 **Headers:**
-
-```http
 Authorization: Bearer <JWT_TOKEN>
 Content-Type: application/json
-```
 
 **Request Body:**
 
@@ -95,35 +84,29 @@ Content-Type: application/json
 
 ## 💻 Environment
 
-* **Java Version:** 21
-* **Spring Boot Version:** 3.4.3
-* **MySQL Version:** 8.0.x
-* **OS:** Windows / macOS / Linux
-* **Client Tool:** Postman / Browser / Curl
+* Java Version: 21
+* Spring Boot Version: 3.4.3
+* MySQL Version: 8.0.x
+* OS: Windows / macOS / Linux
+* Client Tool: Postman / Browser / Curl
 
 ---
 
 ## 📸 Screenshots / Proof
 
-Add screenshots, logs, or API responses if applicable.
-
----
-
-## 🧪 Possible Root Cause (Optional)
-
-If you have any idea what might be causing the issue, mention it here.
+Add screenshots or logs if applicable.
 
 ---
 
 ## 📝 Additional Context
 
-Add any additional information that may help debug the issue.
+Add any additional information here.
 
 ---
 
 ## ✔️ Checklist
 
 * [ ] I have checked existing issues
-* [ ] I have provided all required details
-* [ ] I have included request/response data
-* [ ] I have verified the issue is reproducible
+* [ ] I have provided complete details
+* [ ] I have included request/response
+* [ ] Issue is reproducible

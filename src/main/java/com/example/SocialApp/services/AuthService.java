@@ -2,6 +2,7 @@ package com.example.SocialApp.services;
 
 import com.example.SocialApp.DTOs.AuthResponseDTO;
 import com.example.SocialApp.DTOs.LoginRequestDTO;
+import com.example.SocialApp.DTOs.UserRequestDTO;
 import com.example.SocialApp.models.User;
 import com.example.SocialApp.repository.UserRepository;
 import org.springframework.http.HttpStatus;
@@ -9,25 +10,34 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+
 @Service
 public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final UserService userService;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+    public AuthService(UserRepository userRepository,
+                       PasswordEncoder passwordEncoder,
+                       JwtService jwtService,
+                       UserService userService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.userService = userService;
     }
 
-    public AuthResponseDTO register(User user) {
-        if (userRepository.existsByEmail(user.getEmail())) {
+    public AuthResponseDTO register(UserRequestDTO dto) throws IOException {
+
+        if (userRepository.existsByEmail(dto.getEmail())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "EMAIL ALREADY EXISTS");
         }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        User savedUser = userRepository.save(user);
+
+        User savedUser = userService.registerUser(dto);
+
         String token = jwtService.generateToken(savedUser.getEmail());
         return new AuthResponseDTO(token, savedUser);
     }

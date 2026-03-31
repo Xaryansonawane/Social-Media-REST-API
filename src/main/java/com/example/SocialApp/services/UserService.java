@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.*;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,6 +33,25 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    // ✅ Helper method to save file using NIO (fixes Tomcat temp path issue)
+    private String saveFile(MultipartFile file) throws IOException {
+        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+
+        // Get absolute path of uploads folder in project root
+        Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
+
+        // Create folder if not exists
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        // Save file
+        Path filePath = uploadPath.resolve(fileName);
+        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+        return fileName;
+    }
+
     public User insertUser(User user) {
         if (user.getEmail() == null || user.getEmail().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "EMAIL CANNOT BE EMPTY");
@@ -48,24 +67,16 @@ public class UserService {
     }
 
     public User registerUser(UserRequestDTO dto) throws IOException {
-        MultipartFile profileFile = dto.getProfileImage();
-        MultipartFile coverFile = dto.getCoverImage();
-
         String profileFileName = null;
         String coverFileName = null;
 
-        if (profileFile != null && !profileFile.isEmpty()) {
-            profileFileName = UUID.randomUUID() + "_" + profileFile.getOriginalFilename();
-            File dest = new File(uploadDir + File.separator + profileFileName);
-            dest.getParentFile().mkdirs();
-            profileFile.transferTo(dest);
+        // ✅ Use saveFile helper instead of file.transferTo()
+        if (dto.getProfileImage() != null && !dto.getProfileImage().isEmpty()) {
+            profileFileName = saveFile(dto.getProfileImage());
         }
 
-        if (coverFile != null && !coverFile.isEmpty()) {
-            coverFileName = UUID.randomUUID() + "_" + coverFile.getOriginalFilename();
-            File dest1 = new File(uploadDir + File.separator + coverFileName);
-            dest1.getParentFile().mkdirs();
-            coverFile.transferTo(dest1);
+        if (dto.getCoverImage() != null && !dto.getCoverImage().isEmpty()) {
+            coverFileName = saveFile(dto.getCoverImage());
         }
 
         User user = new User();
@@ -83,10 +94,8 @@ public class UserService {
     public User uploadProfilePhoto(Long id, MultipartFile file) {
         User user = fetchUserById(id);
         try {
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            File dest = new File(uploadDir + File.separator + fileName);
-            dest.getParentFile().mkdirs();
-            file.transferTo(dest);
+            // ✅ Use saveFile helper instead of file.transferTo()
+            String fileName = saveFile(file);
             user.setProfileImage(fileName);
             return userRepository.save(user);
         } catch (IOException e) {

@@ -1,4 +1,4 @@
-# 📱 Social Media REST API
+# 📱 Social-Media-REST-API
 
 > A fully functional, production-structured **RESTful backend** for a social media platform built with **Spring Boot 3.4.3**, **Spring Security**, **JWT Authentication**, **Spring Data JPA**, and **MySQL**.
 >
